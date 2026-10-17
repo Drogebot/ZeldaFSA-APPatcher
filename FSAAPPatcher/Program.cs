@@ -102,6 +102,14 @@ namespace FSAAPPatcher
 								a.YCoord = 63;
 							}
 						}
+						else if (level.Id == "053")
+						{
+							if (room.RoomIndex == 2 && a.Name == "PONT" && a.Layer == 0 && a.YCoord == 20)
+							{
+								a.XCoord = 30;
+								a.YCoord = 44;
+							}
+						}
 						else if (level.Id == "083")
 						{
 							if (room.RoomIndex == 2 && (a.Name == "PNPC" || a.Name == "TKRA") && a.Layer == 0 && a.YCoord == 6)
@@ -113,6 +121,25 @@ namespace FSAAPPatcher
 						room.Actors[i] = a;
 					}
 
+					if (level.Id == "081" && room.RoomIndex == 10)
+					{
+						room.Actors.Add(new FSALib.Structs.Actor
+						{
+							Name = "WARP",
+							Layer = 0,
+							XCoord = 2,
+							YCoord = 38,
+							Variable = 3933698,
+						});
+						room.Actors.Add(new FSALib.Structs.Actor
+						{
+							Name = "YAJI",
+							Layer = 0,
+							XCoord = 3,
+							YCoord = 39,
+							Variable = 3,
+						});
+					}
 
 					levelService.SaveRoom(room);
 				}
