@@ -37,6 +37,7 @@ namespace FSAAPPatcher
 					for (int i = 0; i < room.Actors.Count; i++)
 					{
 						var a = room.Actors[i];
+						// Remove keys, change chest contents, remove characters that give key-items, fix RNG chests access
 						if(a.Name == "KEY0")
 						{
 							a.XCoord = 31;
@@ -102,26 +103,59 @@ namespace FSAAPPatcher
 								a.YCoord = 63;
 							}
 						}
+						else if (level.Id == "083")
+						{
+							if (room.RoomIndex == 2 && (a.Name == "PNPC" || a.Name == "TKRA") && a.Layer == 0 && a.YCoord == 6) // move top row of chests one back
+							{
+								a.YCoord -= 2;
+							}
+						}
+
+						// QoL: Make certain doors open after defeating bosses to allow backtracking to previous rooms in certain levels
+						if (level.Id == "033")
+						{
+							if (room.RoomIndex == 6 && a.Name == "DOOR" && a.Layer == 0)    // reopen door after the ball and chain fight
+							{
+								a.VariableByte4 = 0xA0;
+							}
+							else if (room.RoomIndex == 10 && a.Name == "DOOR" && a.Layer == 0)	// reopen door after the shadow fight
+							{
+								a.VariableByte4 = 0xA0;
+							}
+						}
 						else if (level.Id == "053")
 						{
-							if (room.RoomIndex == 2 && a.Name == "PONT" && a.Layer == 0 && a.YCoord == 20)
+							if (room.RoomIndex == 2 && a.Name == "PONT" && a.Layer == 0 && a.YCoord == 20)	// reopen door instantly
 							{
 								a.XCoord = 30;
 								a.YCoord = 44;
-							}
-						}
-						else if (level.Id == "083")
-						{
-							if (room.RoomIndex == 2 && (a.Name == "PNPC" || a.Name == "TKRA") && a.Layer == 0 && a.YCoord == 6)
-							{
-								a.YCoord -= 2;
 							}
 						}
 
 						room.Actors[i] = a;
 					}
 
-					if (level.Id == "081" && room.RoomIndex == 10)
+					// QoL:Add one way warps to allow backtracking to previous rooms in certain levels
+					if (level.Id == "040" && room.RoomIndex == 3)
+					{
+						room.Actors.Add(new FSALib.Structs.Actor
+						{
+							Name = "WARP",
+							Layer = 0,
+							XCoord = 46,
+							YCoord = 20,
+							Variable = 3018268,
+						});
+						room.Actors.Add(new FSALib.Structs.Actor
+						{
+							Name = "YAJI",
+							Layer = 0,
+							XCoord = 49,
+							YCoord = 21,
+							Variable = 1,
+						});
+					}
+					else if (level.Id == "081" && room.RoomIndex == 10)
 					{
 						room.Actors.Add(new FSALib.Structs.Actor
 						{
