@@ -15,6 +15,7 @@ namespace FSAAPPatcher
 			LevelService levelService = new LevelService();
 			Console.WriteLine("Enter the path to the ISO file:");
 			var iso = Console.ReadLine();
+			iso = iso?.Trim('"', '\'');
 			var game = levelService.OpenIso(iso, progress, false);
 
 			var levels = game.Levels.Where(l => l.Id[0] == '0' && l.Id[1] != '0' && l.Id[1] != '9' && (l.Id[0] < '8' && l.Id[2] != '2' || l.Id[0] == '8' && l.Id[2] != '2'));
@@ -119,6 +120,13 @@ namespace FSAAPPatcher
 								a.VariableByte4 = 0xA0;
 							}
 							else if (room.RoomIndex == 10 && a.Name == "DOOR" && a.Layer == 0)	// reopen door after the shadow fight
+							{
+								a.VariableByte4 = 0xA0;
+							}
+						}
+						else if (level.Id == "043")
+						{
+							if (room.RoomIndex == 13 && a.Name == "DOOR" && a.Layer == 0)  // allow reopening door
 							{
 								a.VariableByte4 = 0xA0;
 							}
