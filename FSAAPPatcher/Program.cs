@@ -13,7 +13,7 @@ namespace FSAAPPatcher
 			var progress = new Progress<string>(message => Console.WriteLine(message));
 
 			LevelService levelService = new LevelService();
-			Console.WriteLine("Enter the path to the ISO file:");
+			Console.WriteLine("Enter path to/Drag the ISO file here:");
 			var iso = Console.ReadLine();
 			iso = iso?.Trim('"', '\'');
 			var game = levelService.OpenIso(iso, progress, false);
@@ -191,6 +191,12 @@ namespace FSAAPPatcher
 
 			var patches = new List<(uint, uint)>
 			{
+				// disable key item changes
+				(0x80241618, 0x60000000),	// stw r4, 0xc10(r3) -> ori r0, r0, 0x0
+				// disable placing key items on pedestals
+				(0x802ac10c, 0x4280013c),	// bgt 0x0x802ac25c -> b 0x802ac248
+				(0x802ac24c, 0x38e00000),	// li r7, 0xfff -> li r7, 0x0
+				(0x802ac254, 0x39000000),	// li r8, 0x100f -> li r8, 0x0
 				//// stop changing gem total
 				//(0x8024edac, 0x60000000),	// stw r0, 0xc04(r3) -> ori r0, r0, 0x0
 				//(0x8024ede0, 0x60000000),	// stw r0, 0xc04(r3) -> ori r0, r0, 0x0
