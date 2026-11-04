@@ -120,30 +120,48 @@ namespace FSAAPPatcher.Services
 			};
 
 			// Load all rooms that exist on the map
-			for (int y = 0; y < map.YDimension; y++)
+			//for (int y = 0; y < map.YDimension; y++)
+			//{
+			//	for (int x = 0; x < map.XDimension; x++)
+			//	{
+			//		int roomIdx = map[x, y];
+			//		if (roomIdx == MapLayout.EMPTY_ROOM_VALUE) continue;
+			//		if (level.Rooms.Any(r => r.RoomIndex == roomIdx)) continue;
+			//
+			//		string binPath = ActorList.GetFilePath(dir, level.MapIndex, roomIdx);
+			//		if (!File.Exists(binPath)) continue;
+			//
+			//		var actors = new ActorList();
+			//		using (var fs = File.OpenRead(binPath))
+			//			actors.ReadFromStream(fs);
+			//
+			//		level.Rooms.Add(new LoadedRoom
+			//		{
+			//			RoomIndex = roomIdx,
+			//			MapX = x,
+			//			MapY = y,
+			//			Actors = actors,
+			//			ActorFilePath = binPath,
+			//		});
+			//	}
+			//}
+			for (int roomIdx = 0; roomIdx < MapLayout.MAX_Rooms; roomIdx++)
 			{
-				for (int x = 0; x < map.XDimension; x++)
+				string binPath = ActorList.GetFilePath(dir, level.MapIndex, roomIdx);
+				if (!File.Exists(binPath)) continue;
+				
+				var actors = new ActorList();
+				using (var fs = File.OpenRead(binPath))
+					actors.ReadFromStream(fs);
+				
+				level.Rooms.Add(new LoadedRoom
 				{
-					int roomIdx = map[x, y];
-					if (roomIdx == MapLayout.EMPTY_ROOM_VALUE) continue;
-					if (level.Rooms.Any(r => r.RoomIndex == roomIdx)) continue;
-
-					string binPath = ActorList.GetFilePath(dir, level.MapIndex, roomIdx);
-					if (!File.Exists(binPath)) continue;
-
-					var actors = new ActorList();
-					using (var fs = File.OpenRead(binPath))
-						actors.ReadFromStream(fs);
-
-					level.Rooms.Add(new LoadedRoom
-					{
-						RoomIndex = roomIdx,
-						MapX = x,
-						MapY = y,
-						Actors = actors,
-						ActorFilePath = binPath,
-					});
-				}
+					RoomIndex = roomIdx,
+					MapX = -1,
+					MapY = -1,
+					Actors = actors,
+					ActorFilePath = binPath,
+				});
 			}
 
 			return level;

@@ -56,6 +56,10 @@ namespace FSAAPPatcher
 						{
 							a.VariableByte1 = 0;
 						}
+						else if (a.Name == "PNPC" && (a.VariableByte2 & 0b1100) > 0)
+						{
+							a.VariableByte2 |= 0b1100;
+						}
 
 						if (level.Id == "021")
 						{
@@ -182,6 +186,25 @@ namespace FSAAPPatcher
 							Variable = 3,
 						});
 					}
+					else if (level.Id == "081" && room.RoomIndex == 30)
+					{
+						room.Actors.Add(new FSALib.Structs.Actor
+						{
+							Name = "WARP",
+							Layer = 0,
+							XCoord = 2,
+							YCoord = 38,
+							Variable = 3933698,
+						});
+						room.Actors.Add(new FSALib.Structs.Actor
+						{
+							Name = "YAJI",
+							Layer = 0,
+							XCoord = 3,
+							YCoord = 39,
+							Variable = 3,
+						});
+					}
 
 					levelService.SaveRoom(room);
 				}
@@ -206,11 +229,13 @@ namespace FSAAPPatcher
 				//(0x80288a60, 0x42800038),	// bne 0x80288a98 -> b 0x80288a98
 				// disable d-pad button behaviour
 				(0x8030a8d0, 0x42800078),	// rlwinm. r0, r3, 0x0, 0x1f, 0x1f -> b 0x8030a948
-				// skip the intro cutscene
-				(0x803ec450, 0x60000000),	// beq 0x803ec470 -> ori r0, r0, 0x0
+				// savedata crc check always passes
+				(0x803ce538, 0x60000000),	// beq 0x803ce850 -> ori r0, r0, 0x0
 				// death restores healthMax because if you die with <=4 healthMax, you will be stuck in a death loop
 				(0x803d9de4, 0x3bc30000),	// subi r30, r3, 0x4 -> addi r30, r3, 0x0
 				(0x803d9e14, 0x38840000),	// subi r4, r4, 0x4 -> addi r4, r4, 0x0
+				// skip the intro cutscene
+				(0x803ec450, 0x60000000),	// beq 0x803ec470 -> ori r0, r0, 0x0
 				// unlock all levels
 				(0x80404da0, 0x60000000),	// beq 0x804050e8 -> ori r0, r0, 0x0
 				// default level 0
@@ -220,7 +245,6 @@ namespace FSAAPPatcher
 				(0x80413f08, 0x901f038c),	// stw r7, 0x38c(r31) -> stw r0, 0x38c(r31)
 			};
 
-			;
 			var outputIso = Path.Join(Path.GetDirectoryName(iso), $"{Path.GetFileNameWithoutExtension(iso)}_modified.iso");
 			levelService.ExportIso(game, outputIso, patches, progress: progress);
 
