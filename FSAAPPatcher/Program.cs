@@ -245,7 +245,7 @@ namespace FSAAPPatcher
 				(0x80413f08, 0x901f038c),	// stw r7, 0x38c(r31) -> stw r0, 0x38c(r31)
 			};
 
-			var outputIso = @$"{Path.GetDirectoryName(iso)}\{Path.GetFileNameWithoutExtension(iso)}_modified.iso";
+			var outputIso = Path.Join(Path.GetDirectoryName(iso), $"{Path.GetFileNameWithoutExtension(iso)}_modified.iso");
 			levelService.ExportIso(game, outputIso, patches, progress: progress);
 
 			((IProgress<string>)progress).Report($"Press any key to exit...");
